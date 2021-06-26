@@ -1,6 +1,8 @@
 # Monitoring Models in Production using Aporia
 
-This repository demonstrates how to integrate Aporia's ML model monitoring service into a Bodywork serving pipeline. The steps for engineering the pipeline are:
+![aporia](https://bodywork-media.s3.eu-west-2.amazonaws.com/bodywork-aporia-lifecycle.png)
+
+This repository demonstrates how to integrate [Aporia's](https://www.aporia.com) ML model monitoring service into a [Bodywork](https://www.bodyworkml.com) serving pipeline. The steps for engineering the pipeline are:
 
 1. Create synthetic regression datasets off-line - see the notebook `notebook/create_datasets.ipynb`.
 2. Train a model off-line, upload it to cloud object storage and register the datasets with Aporia - see the notebook `notebook/train_model.ipynb` notebook.
