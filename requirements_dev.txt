@@ -1,0 +1,2 @@
+bodywork==2.1.6
+pytest==6.2.4
