@@ -101,7 +101,8 @@ def configure_aporia_monitoring() -> Optional[aporia.model.Model]:
         host = os.environ.get("APORIA_HOST")
         environment = os.environ.get("APORIA_ENVIRONMENT", "local-dev")
         
-        aporia.init(token=token, host=host, environment=environment)
+        # IMPORTANT: Consider removing verbose=True in production.
+        aporia.init(token=token, host=host, environment=environment, verbose=True)
 
         return aporia.Model(model_id="bodywork-test-8wxi", model_version="v1")
     except KeyError:
