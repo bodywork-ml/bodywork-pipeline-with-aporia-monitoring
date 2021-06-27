@@ -48,14 +48,18 @@ async def predict(data: FeatureDataInstance) -> Dict[str, floating]:
         f2_encoded = CATEGORY_TP_INTEGER_MAP[data.f2]
         X = array([[data.f1, f2_encoded]])
 
-        prediction = {"y_pred": model.predict(X)}
+        prediction = {"y_pred": float(model.predict(X))}
 
         if aporia_client is not None:
             aporia_client.log_prediction(
                 id=data.id,
-                features=data.dict(),
+                features={
+                    "f1": data.f1,
+                    "f2": data.f2,
+                },
                 predictions=prediction
             )
+
         return prediction
     except KeyError as e:
         msg = f"Unknown category provided for f2 - {e}"
