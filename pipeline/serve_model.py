@@ -112,6 +112,8 @@ def configure_aporia_monitoring() -> Optional[aporia.model.Model]:
         # IMPORTANT: Consider removing verbose=True in production.
         aporia.init(token=token, host=host, environment=environment, verbose=True)
 
+        # NOTE: This will fail if you didn't call aporia.create_model_version() on this model yet.
+        # See notebooks/train_model.ipynb
         return aporia.Model(model_id="bodywork-test-8wxi", model_version="v1")
     except KeyError:
         msg = "Could not find required APORIA_TOKEN or APORIA_MODEL_ID environment variable."
