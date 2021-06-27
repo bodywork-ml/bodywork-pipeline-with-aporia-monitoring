@@ -79,13 +79,15 @@ $ bodywork setup-namespace aporia-demo
 To enable ML model monitoring with Aporia, you will need to deploy your Aporia token to the cluster (as an encrypted secret that the web service can retrieve securely). This can be done with the following command,
 
 ```text
-$ bodywork secret create \
-    --namespace=aporia-demo \
-    --name=aporia-token \
-    --data APORIA_TOKEN=PASTE_YOUR_TOKEN_IN_HERE
+$ bodywork secret create
+    --namespace=aporia-demo
+    --name=aporia
+    --data APORIA_TOKEN=PASTE_YOUR_TOKEN_IN_HERE APORIA_HOST=app.aporia.com APORIA_ENVIRONMENT=production
 ```
 
 If you haven't yet setup an Aporia account, then set any random token - the prediction service will still deploy, albeit without the Aporia client configured.
+
+If you're using an on-premise Aporia cluster, make sure to change `APORIA_HOST` as well.
 
 ## Run the ML Pipeline
 

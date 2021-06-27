@@ -47,7 +47,9 @@ async def predict(data: FeatureDataInstance) -> Dict[str, floating]:
     try:
         f2_encoded = CATEGORY_TP_INTEGER_MAP[data.f2]
         X = array([[data.f1, f2_encoded]])
+
         prediction = {"y_pred": model.predict(X)}
+
         if aporia_client is not None:
             aporia_client.log_prediction(
                 id=data.id,
@@ -96,11 +98,14 @@ def configure_aporia_monitoring() -> Optional[aporia.model.Model]:
     """Configure the Aporia client API for ML model monitoring."""
     try:
         token = os.environ["APORIA_TOKEN"]
-        aporia.init(token, environment="bodywork-prod")
-        apr_model = aporia.Model(model_id="bodywork-demo", model_version="v1")
-        return apr_model
+        host = os.environ.get("APORIA_HOST")
+        environment = os.environ.get("APORIA_ENVIRONMENT", "local-dev")
+        
+        aporia.init(token=token, host=host, environment=environment)
+
+        return aporia.Model(model_id="bodywork-test-8wxi", model_version="v1")
     except KeyError:
-        msg = "Could not find APORIA_TOKEN environment variable."
+        msg = "Could not find required APORIA_TOKEN or APORIA_MODEL_ID environment variable."
         log.warning(msg)
         return None
     except Exception as e:

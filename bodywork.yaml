@@ -21,6 +21,8 @@ stages:
       port: 8000
       ingress: true
     secrets:
-      APORIA_TOKEN: aporia-token
+      APORIA_HOST: aporia
+      APORIA_TOKEN: aporia
+      APORIA_ENVIRONMENT: aporia
 logging:
   log_level: INFO
