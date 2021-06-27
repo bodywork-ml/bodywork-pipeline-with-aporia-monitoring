@@ -48,16 +48,20 @@ async def predict(data: FeatureDataInstance) -> Dict[str, floating]:
         f2_encoded = CATEGORY_TP_INTEGER_MAP[data.f2]
         X = array([[data.f1, f2_encoded]])
 
-        prediction = {"y_pred": float(model.predict(X))}
+        prediction = {"y": float(model.predict(X))}
 
         if aporia_client is not None:
             aporia_client.log_prediction(
                 id=data.id,
-                features={
-                    "f1": data.f1,
-                    "f2": data.f2,
+                raw_inputs={
+                    "F_1": data.f1,
+                    "F_2": f2_encoded,
                 },
-                predictions=prediction
+                features={
+                    "F_1": data.f1,
+                    "F_2": data.f2,
+                },
+                predictions=prediction,
             )
 
         return prediction
