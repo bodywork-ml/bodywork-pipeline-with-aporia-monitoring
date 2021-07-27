@@ -18,7 +18,7 @@ def valid_payload() -> Dict[str, Any]:
 def test_service_return_predictions_for_valid_payloads(valid_payload: Dict[str, Any]):
     response = test_client.post(url="api/v1/predict", json=valid_payload)
     assert response.status_code == 200
-    assert response.json()["y_pred"] == approx(0.6412045368458209)
+    assert response.json()["y"] == approx(0.6412045368458209)
 
 
 def test_service_raises_http_422_for_invalid_category(valid_payload: Dict[str, Any]):

@@ -6,6 +6,8 @@ project:
 stages:
   serve-model:
     executable_module_path: pipeline/serve_model.py
+    args:
+      - "--aporia-model-id=bodywork-model2 --aporia-model-version=v1"
     requirements:
       - joblib==1.0.1
       - numpy==1.21.0

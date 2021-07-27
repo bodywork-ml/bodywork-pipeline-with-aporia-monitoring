@@ -8,6 +8,7 @@ import os
 import sys
 from typing import Dict, Optional
 from urllib.request import urlopen
+import argparse
 
 import aporia
 import joblib
@@ -25,6 +26,7 @@ MODEL_URL = (
 )
 
 app = FastAPI(debug=False)
+aporia_client = None
 
 
 class FeatureDataInstance(BaseModel):
@@ -38,7 +40,7 @@ class FeatureDataInstance(BaseModel):
 class Prediction(BaseModel):
     """Define JSON data schema for prediction response."""
 
-    y_pred: float
+    y: float
 
 
 @app.post("/api/v1/predict", status_code=status.HTTP_200_OK, response_model=Prediction)
@@ -102,7 +104,7 @@ def configure_logger() -> logging.Logger:
     return log
 
 
-def configure_aporia_monitoring() -> Optional[aporia.model.Model]:
+def configure_aporia_monitoring(model_id: str, model_version: str) -> Optional[aporia.model.Model]:
     """Configure the Aporia client API for ML model monitoring."""
     try:
         token = os.environ["APORIA_TOKEN"]
@@ -114,7 +116,7 @@ def configure_aporia_monitoring() -> Optional[aporia.model.Model]:
 
         # NOTE: This will fail if you didn't call aporia.create_model_version() on this model yet.
         # See notebooks/train_model.ipynb
-        return aporia.Model(model_id="bodywork-test-8wxi", model_version="v1")
+        return aporia.Model(model_id, model_version)
     except KeyError:
         msg = "Could not find required APORIA_TOKEN or APORIA_MODEL_ID environment variable."
         log.warning(msg)
@@ -127,9 +129,21 @@ def configure_aporia_monitoring() -> Optional[aporia.model.Model]:
 
 log = configure_logger()
 model = load_model(MODEL_URL)
-aporia_client = configure_aporia_monitoring()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--aporia-model-id', dest='aporia_model_id')
+    parser.add_argument('--aporia-model-version', dest='aporia_model_version')
+
+    args = parser.parse_args()
+    if args.aporia_model_id:
+        global aporia_client
+        aporia_client = configure_aporia_monitoring(args.aporia_model_id, args.aporia_model_version)
+
+    log.info("Starting prediction server.")
+    uvicorn.run(app, host="0.0.0.0", workers=1)
 
 
 if __name__ == "__main__":
-    log.info("Starting prediction server.")
-    uvicorn.run(app, host="0.0.0.0", workers=1)
+    main()
