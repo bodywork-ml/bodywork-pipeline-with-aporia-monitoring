@@ -4,15 +4,15 @@
 
 This repository demonstrates how to integrate [Aporia's](https://www.aporia.com) ML model monitoring service into a [Bodywork](https://www.bodyworkml.com) serving pipeline. The steps for engineering the pipeline are:
 
-1. Create synthetic regression datasets off-line - see the notebook `notebook/create_datasets.ipynb`.
-2. Train a model off-line, upload it to cloud object storage and register the datasets with Aporia - see the notebook `notebook/train_model.ipynb` notebook.
+1. Create synthetic regression datasets off-line - see the notebook `notebooks/create_datasets.ipynb`.
+2. Train a model off-line, upload it to cloud object storage and register the datasets with Aporia - see the notebook `notebooks/train_model.ipynb` notebook.
 3. Use FastAPI to develop a web service for exposing the model (downloaded from cloud object storage), and setup the Aporia client to log predictions, so that the model can be monitored in production - see `pipeline/serve_model.py`.
 4. Configure the deployment to Kubernetes in `bodywork.yaml`.
 5. Deploy to Kubernetes using the Bodywork CLI.
 
 To run this project yourself, follow the steps below. All of the datasets and model artefacts required to run and deploy the pipeline are hosted on a publicly accessible AWS S3 bucket, so there's no need to setup anything unless you want to.
 
-## Setup Python Virtual Environment and Install Required Packages
+## Requirements
 
 Before we get going,
 
@@ -22,6 +22,14 @@ $ source .venv/bin/activate
 $ pip install -r requirements.txt
 $ pip install -r requirements_dev.txt
 ```
+
+You'll also need an [Aporia account](https://app.aporia.com/models?mode=signup). In this guide we'll use the cloud version, but Aporia can be installed on-prem as well.
+
+## Model Training
+
+Start by creating a model in Aporia. 
+
+Copy your token and Model ID to the last snippet in `notebooks/train_model.ipynb`, and train the model by running the notebook. This will send aggregations of your train & test data to Aporia.
 
 ## Testing Locally
 
@@ -34,7 +42,7 @@ $ pytest
 Then, start the web service,
 
 ```text
-$ python pipeline/serve_model.py
+$ python pipeline/serve_model.py --aporia-model-id <APORIA_MODEL_ID> --aporia-model-version <APORIA_MODEL_VERSION>
 ```
 
 And in another shell send it a request for a prediction,
@@ -85,11 +93,11 @@ $ bodywork secret create
     --data APORIA_TOKEN=PASTE_YOUR_TOKEN_IN_HERE APORIA_HOST=app.aporia.com APORIA_ENVIRONMENT=production
 ```
 
-If you haven't yet setup an Aporia account, then set any random token - the prediction service will still deploy, albeit without the Aporia client configured.
-
 If you're using an on-premise Aporia cluster, make sure to change `APORIA_HOST` as well.
 
 ## Run the ML Pipeline
+
+First, make sure to set the correct model ID & version in `bodywork.yaml`.
 
 To test the pipeline using a workflow-controller that runs locally,
 
