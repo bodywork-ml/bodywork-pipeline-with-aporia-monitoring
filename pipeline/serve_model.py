@@ -132,14 +132,18 @@ model = load_model(MODEL_URL)
 
 
 def main():
+    global aporia_client
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--aporia-model-id', dest='aporia_model_id')
     parser.add_argument('--aporia-model-version', dest='aporia_model_version')
 
+    
     args = parser.parse_args()
-    if args.aporia_model_id:
-        global aporia_client
-        aporia_client = configure_aporia_monitoring(args.aporia_model_id, args.aporia_model_version)
+    print(args)
+
+
+    aporia_client = configure_aporia_monitoring(args.aporia_model_id, args.aporia_model_version)
 
     log.info("Starting prediction server.")
     uvicorn.run(app, host="0.0.0.0", workers=1)
