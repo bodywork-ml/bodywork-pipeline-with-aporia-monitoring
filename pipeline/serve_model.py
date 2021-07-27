@@ -57,11 +57,11 @@ async def predict(data: FeatureDataInstance) -> Dict[str, floating]:
                 id=data.id,
                 raw_inputs={
                     "F_1": data.f1,
-                    "F_2": f2_encoded,
+                    "F_2": data.f2,
                 },
                 features={
                     "F_1": data.f1,
-                    "F_2": data.f2,
+                    "F_2": f2_encoded,
                 },
                 predictions=prediction,
             )
