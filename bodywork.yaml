@@ -1,5 +1,5 @@
 version: "1.1"
-project:
+pipeline:
   name: bodywork-aporia
   docker_image: bodyworkml/bodywork-core:latest
   DAG: serve-model
