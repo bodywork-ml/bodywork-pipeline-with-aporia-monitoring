@@ -1,8 +1,9 @@
-version: "1.0"
+version: "1.1"
 project:
   name: bodywork-aporia
   docker_image: bodyworkml/bodywork-core:latest
   DAG: serve-model
+  secrets-group: prod
 stages:
   serve-model:
     executable_module_path: pipeline/serve_model.py
@@ -19,7 +20,7 @@ stages:
     cpu_request: 0.5
     memory_request_mb: 100
     service:
-      max_startup_time_seconds: 60
+      max_startup_time_seconds: 180
       replicas: 1
       port: 8000
       ingress: true
