@@ -17,7 +17,7 @@ To run this project yourself, follow the steps below. All of the datasets and mo
 Before we get going,
 
 ```text
-$ python3.8 -m venv .venv
+$ python3.9 -m venv .venv
 $ source .venv/bin/activate
 $ pip install -r requirements.txt
 $ pip install -r requirements_dev.txt
@@ -27,7 +27,7 @@ You'll also need an [Aporia account](https://app.aporia.com/models?mode=signup).
 
 ## Model Training
 
-Start by creating a model in Aporia. 
+Start by creating a model in Aporia.
 
 Copy your token and Model ID to the last snippet in `notebooks/train_model.ipynb`, and train the model by running the notebook. This will send aggregations of your train & test data to Aporia.
 
@@ -66,58 +66,36 @@ If you've got this far, it's now time to deploy to Kubernetes.
 
 ## Get Access to a Kubernetes Cluster
 
-In order to run this example pipeline, you will need access to a Kubernetes cluster. Check out [our guide](https://bodywork.readthedocs.io/en/latest/kubernetes/#getting-started-with-kubernetes) to get up-and-running with a single-node test cluster on your local machine, in under 10 minutes!
-
-Once you're ready, check your access to Kubernetes by running,
-
-```text
-$ kubectl cluster-info
-```
-
-Which should return the details of your cluster.
-
-## Setup a Kubernetes Namespace for use with Bodywork
-
-```text
-$ bodywork setup-namespace aporia-demo
-```
+In order to run this example pipeline, you will need access to a Kubernetes cluster. Check out [our guide](https://bodywork.readthedocs.io/en/latest/kubernetes/#quickstart) to get up-and-running with a single-node test cluster on your local machine, in under 10 minutes!
 
 ## Deploy your Aporia Token to the Cluster
 
 To enable ML model monitoring with Aporia, you will need to deploy your Aporia token to the cluster (as an encrypted secret that the web service can retrieve securely). This can be done with the following command,
 
 ```text
-$ bodywork secret create
-    --namespace=aporia-demo
-    --name=aporia
-    --data APORIA_TOKEN=PASTE_YOUR_TOKEN_IN_HERE APORIA_HOST=app.aporia.com APORIA_ENVIRONMENT=production
+$ bodywork create secret aporia \
+    --group prod \
+    --data APORIA_TOKEN=PASTE_YOUR_TOKEN_IN_HERE \
+    --data APORIA_HOST=app.aporia.com \
+    --data APORIA_ENVIRONMENT=production
 ```
 
 If you're using an on-premise Aporia cluster, make sure to change `APORIA_HOST` as well.
 
 ## Run the ML Pipeline
 
-First, make sure to set the correct model ID & version in `bodywork.yaml`.
-
-To test the pipeline using a workflow-controller that runs locally,
+First, make sure to set the correct model ID & version in `bodywork.yaml`. Then deploy the pipeline,
 
 ```text
-$ bodywork deployment create \
-    --namespace=aporia-demo \
-    --name=test \
-    --git-repo-url=https://github.com/bodywork-ml/bodywork-pipeline-with-aporia-monitoring \
-    --git-repo-branch=master \
-    --local
+$ bodywork create deployment https://github.com/bodywork-ml/bodywork-pipeline-with-aporia-monitoring
 ```
-
-So that the logs will be streamed to your shell's standard output until the job has been successfully completed.
 
 ## Testing the Prediction Service
 
 The deployment is configured to expose the endpoint via an ingress controller, which will be reached as follows,
 
 ```text
-$ curl http://YOUR_CLUSTERS_EXTERNAL_IP/aporia-demo/bodywork-aporia--serve-model/api/v1/predict \
+$ curl http://YOUR_CLUSTERS_EXTERNAL_IP/bodywork-aporia/serve-model/api/v1/predict \
     --request POST \
     --header "Content-Type: application/json" \
     --data '{"id": "001", "f1": 0.2, "f2": "c2"}'
@@ -131,14 +109,14 @@ Which will return,
 }
 ```
 
-As before. See [here](https://bodywork.readthedocs.io/en/latest/kubernetes/#connecting-to-the-cluster) for instruction on how to retrieve `YOUR_CLUSTERS_EXTERNAL_IP`.
+As before. See [here](https://bodywork.readthedocs.io/en/latest/kubernetes/#accessing-services) for instruction on how to retrieve `YOUR_CLUSTERS_EXTERNAL_IP`.
 
 ## Cleaning Up
 
-To clean-up the deployment in its entirety, delete the namespace using Kubectl - e.g. by running,
+To clean-up the deployment in its entirety run,
 
 ```shell
-$ kubectl delete ns aporia-demo
+$ bodywork delete deployment bodywork-aporia
 ```
 
 ## Make this Project Your Own

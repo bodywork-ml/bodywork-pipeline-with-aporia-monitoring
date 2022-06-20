@@ -1,2 +1,2 @@
-bodywork==2.1.6
+bodywork>=3.0.0
 pytest==6.2.4
