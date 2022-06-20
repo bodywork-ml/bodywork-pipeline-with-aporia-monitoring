@@ -3,7 +3,7 @@ pipeline:
   name: bodywork-aporia
   docker_image: bodyworkml/bodywork-core:latest
   DAG: serve-model
-  secrets-group: prod
+  secrets_group: prod
 stages:
   serve-model:
     executable_module_path: pipeline/serve_model.py
